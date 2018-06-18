@@ -1,0 +1,42 @@
+/*Spark Commands */
+
+/*to start spark shell*/
+spark-shell
+
+spark-shell --master yarn \
+--conf spark.ui.port=12654 \
+--num-executors 1 \
+--executor-memory 512M
+sc.getConf.getAll
+
+
+//Intialize Programtically
+import org.apache.spark.{SparkConf, SparkContext}
+val conf = new SparkConf().setAppName("Dail Revenue").setMaster("yarn-client")
+val sc = new SparkContext(conf)
+
+
+/*create RDD using spark Shell */
+/*Import the data set that you would like to read*/ 
+
+val orders = sc.textFile("/user/cca175spark/retail_db/orders")
+/*Once assigned to view the data*/
+orders.first
+orders.take(10)
+
+
+/*To create an iterator using local file*/
+
+ val productsRaw = scala.io.Source.fromFile("Documents/retail_db/products/part-00000").getLines.toList
+ productsRaw.take(10).foreach(println)
+ val productsRDD = sc.parallelize(productsRaw)
+
+
+/*Within Spark-shell - to create a Data Frame*/
+val ordersDF = sqlContext.read.json("user/cca175spark/retail_db_json/orders")
+
+/*to-print the dataframe objects */
+ordersDF.show
+/*to-print the schema of the orders*/
+ordersDF.printSchema
+ordersDF.select("order_id,order_date").show
